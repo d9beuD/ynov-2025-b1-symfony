@@ -67,7 +67,40 @@
                 {# Existing comments #}
                 <ul class="list-unstyled">
                     {% for comment in post.comments %}
-                        <li>{{ comment.content }}</li>
+                        <li>
+                            <div class="row gx-1 mb-3">
+                                <div class="col-auto">
+                                    <i class="fa-solid fa-circle-user fs-1 text-primary"></i>
+                                </div>
+                                
+                                <div class="col">
+                                    <b>{{ comment.author.email }}</b>
+                                    
+                                    <div class="mb-2">
+                                        {{ comment.content }}
+                                    </div>
+                                    
+                                    <div>
+                                        <button class="btn btn-secondary rounded-pill btn-sm">
+                                            <i class="fa-solid fa-up"></i>
+                                            Upvote
+                                        </button>
+                                        <button class="btn btn-secondary rounded-pill btn-sm">
+                                            <i class="fa-solid fa-down"></i>
+                                            Downvote
+                                        </button>
+                                        <button class="btn btn-secondary rounded-pill btn-sm">
+                                            <i class="fa-solid fa-comment"></i>
+                                            Commentaires
+                                        </button>
+                                        <button class="btn btn-secondary rounded-pill btn-sm">
+                                            <i class="fa-solid fa-share"></i>
+                                            Partager
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
                     {% endfor %}
                 </ul>
             </div>
