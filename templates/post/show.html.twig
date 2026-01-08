@@ -29,10 +29,10 @@
 
                 {# Post actions #}
                 <div class="mb-5">
-                    <button class="btn btn-secondary rounded-pill btn-sm">
+                    <a href="{{ path('app_post_upvote', { id: post.id }) }}" class="btn btn-secondary rounded-pill btn-sm">
                         <i class="fa-solid fa-up"></i>
-                        Upvote
-                    </button>
+                        {{ upvotesCount }}
+                    </a>
                     <button class="btn btn-secondary rounded-pill btn-sm">
                         <i class="fa-solid fa-down"></i>
                         Downvote
