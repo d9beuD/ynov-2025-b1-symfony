@@ -51,6 +51,22 @@ final class Comment
         return $this->countUpvotes() - $this->countDownvotes();
     }
 
+    public function userHasUpvoted(): bool
+    {
+        return $this->commentUpvoteRepository->findOneBy([
+            'comment' => $this->comment,
+            'user' => $this->security->getUser()
+        ]) !== null;
+    }
+
+    public function userHasDownvoted(): bool
+    {
+        return $this->commentDownvoteRepository->findOneBy([
+            'comment' => $this->comment,
+            'user' => $this->security->getUser()
+        ]) !== null;
+    }
+
     #[LiveAction]
     public function upvote(
         CommentManager $commentManager,
