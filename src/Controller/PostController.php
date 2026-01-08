@@ -23,8 +23,12 @@ use Symfony\Component\Security\Http\Attribute\CurrentUser;
 final class PostController extends AbstractController
 {
     #[Route('/{id}', name: 'app_post_show', methods: ['GET'])]
-    public function show(Post $post, PostRepository $postRepository): Response
-    {
+    public function show(
+        Post $post,
+        PostRepository $postRepository,
+        PostUpvoteRepository $postUpvoteRepository,
+        PostDownvoteRepository $postDownvoteRepository,
+    ): Response {
         $comment = new Comment();
         $comment->setAuthor($this->getUser());
 
@@ -35,6 +39,8 @@ final class PostController extends AbstractController
             'post' => $post,
             'upvotesCount' => $postRepository->countUpvotes($post->getId()),
             'downvotesCount' => $postRepository->countDownvotes($post->getId()),
+            'hasUpvoted' => $postUpvoteRepository->findOneBy(['post' => $post, 'user' => $this->getUser()]) !== null,
+            'hasDownvoted' => $postDownvoteRepository->findOneBy(['post' => $post, 'user' => $this->getUser()]) !== null,
             'form' => $form,
         ]);
     }
@@ -91,6 +97,7 @@ final class PostController extends AbstractController
         Post $post,
         EntityManagerInterface $entityManager,
         PostDownvoteRepository $postDownvoteRepository,
+        PostUpvoteRepository $postUpvoteRepository,
     ): Response {
 
         $downvote = $postDownvoteRepository->findOneBy(['user' => $user, 'post' => $post]);
@@ -98,14 +105,21 @@ final class PostController extends AbstractController
         if ($downvote !== null) {
             $entityManager->remove($downvote);
         }
-        
-        $postUpvote = new PostUpvote();
-        $postUpvote
-            ->setPost($post)
-            ->setUser($user)
-        ;
 
-        $entityManager->persist($postUpvote);
+        $upvote = $postUpvoteRepository->findOneBy(['post' => $post, 'user' => $user]);
+
+        if ($upvote !== null) {
+            $entityManager->remove($upvote);
+        } else {
+            $postUpvote = new PostUpvote();
+            $postUpvote
+                ->setPost($post)
+                ->setUser($user)
+            ;
+    
+            $entityManager->persist($postUpvote);
+        }
+        
         $entityManager->flush();
 
         return $this->redirectToRoute('app_post_show', ['id' => $post->getId()]);
@@ -116,7 +130,8 @@ final class PostController extends AbstractController
         #[CurrentUser()] User $user, 
         Post $post, 
         EntityManagerInterface $entityManager, 
-        PostUpvoteRepository $postUpvoteRepository
+        PostUpvoteRepository $postUpvoteRepository,
+        PostDownvoteRepository $postDownvoteRepository,
     ): Response {
         $upvote = $postUpvoteRepository->findOneBy(['user' => $user, 'post' => $post]);
 
@@ -124,13 +139,20 @@ final class PostController extends AbstractController
             $entityManager->remove($upvote);
         }
 
-        $postDownvote = new PostDownvote();
-        $postDownvote
-            ->setPost($post)
-            ->setUser($user)
-        ;
+        $downvote = $postDownvoteRepository->findOneBy(['post' => $post, 'user' => $user]);
 
-        $entityManager->persist($postDownvote);
+        if ($downvote !== null) {
+            $entityManager->remove($downvote);
+        } else {
+            $postDownvote = new PostDownvote();
+            $postDownvote
+                ->setPost($post)
+                ->setUser($user)
+            ;
+    
+            $entityManager->persist($postDownvote);
+        }
+
         $entityManager->flush();
 
         return $this->redirectToRoute('app_post_show', ['id' => $post->getId()]);
