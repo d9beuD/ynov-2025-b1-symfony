@@ -59,12 +59,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: PostDownvote::class, mappedBy: 'user', orphanRemoval: true)]
     private Collection $postDownvotes;
 
+    /**
+     * @var Collection<int, CommentUpvote>
+     */
+    #[ORM\OneToMany(targetEntity: CommentUpvote::class, mappedBy: 'user', orphanRemoval: true)]
+    private Collection $commentUpvotes;
+
     public function __construct()
     {
         $this->posts = new ArrayCollection();
         $this->comments = new ArrayCollection();
         $this->postUpvotes = new ArrayCollection();
         $this->postDownvotes = new ArrayCollection();
+        $this->commentUpvotes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -262,6 +269,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($postDownvote->getUser() === $this) {
                 $postDownvote->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, CommentUpvote>
+     */
+    public function getCommentUpvotes(): Collection
+    {
+        return $this->commentUpvotes;
+    }
+
+    public function addCommentUpvote(CommentUpvote $commentUpvote): static
+    {
+        if (!$this->commentUpvotes->contains($commentUpvote)) {
+            $this->commentUpvotes->add($commentUpvote);
+            $commentUpvote->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCommentUpvote(CommentUpvote $commentUpvote): static
+    {
+        if ($this->commentUpvotes->removeElement($commentUpvote)) {
+            // set the owning side to null (unless already changed)
+            if ($commentUpvote->getUser() === $this) {
+                $commentUpvote->setUser(null);
             }
         }
 

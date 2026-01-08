@@ -40,9 +40,16 @@ class Comment
     #[ORM\ManyToOne(inversedBy: 'comments')]
     private ?Post $post = null;
 
+    /**
+     * @var Collection<int, CommentUpvote>
+     */
+    #[ORM\OneToMany(targetEntity: CommentUpvote::class, mappedBy: 'comment', orphanRemoval: true)]
+    private Collection $upvotes;
+
     public function __construct()
     {
         $this->replies = new ArrayCollection();
+        $this->upvotes = new ArrayCollection();
     }
 
     #[ORM\PrePersist]
@@ -142,6 +149,36 @@ class Comment
     public function setPost(?Post $post): static
     {
         $this->post = $post;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, CommentUpvote>
+     */
+    public function getUpvotes(): Collection
+    {
+        return $this->upvotes;
+    }
+
+    public function addUpvote(CommentUpvote $upvote): static
+    {
+        if (!$this->upvotes->contains($upvote)) {
+            $this->upvotes->add($upvote);
+            $upvote->setComment($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUpvote(CommentUpvote $upvote): static
+    {
+        if ($this->upvotes->removeElement($upvote)) {
+            // set the owning side to null (unless already changed)
+            if ($upvote->getComment() === $this) {
+                $upvote->setComment(null);
+            }
+        }
 
         return $this;
     }
