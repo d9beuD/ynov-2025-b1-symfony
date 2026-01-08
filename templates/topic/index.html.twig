@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Topic index{% endblock %}
+
+{% block body %}
+    <div class="container my-5">
+        <h1>Topic index</h1>
+    
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Title</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for topic in topics %}
+                <tr>
+                    <td>{{ topic.id }}</td>
+                    <td><a href="{{ path('app_topic_show', { id: topic.id }) }}">{{ topic.title }}</a></td>
+                    <td>{{ topic.description }}</td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="4">no records found</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    
+        <a href="{{ path('app_topic_new') }}">Create new</a>
+    </div>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Post{% endblock %}
+
+{% block body %}
+    <h1>Create new Post</h1>
+
+    {{ include('post/_form.html.twig') }}
+
+    <a href="{{ path('app_topic_show', { id: topic.id }) }}">Retour au topic</a>
+{% endblock %}
