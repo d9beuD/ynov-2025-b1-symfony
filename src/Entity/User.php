@@ -47,10 +47,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'author', orphanRemoval: true)]
     private Collection $comments;
 
+    /**
+     * @var Collection<int, PostUpvote>
+     */
+    #[ORM\OneToMany(targetEntity: PostUpvote::class, mappedBy: 'user', orphanRemoval: true)]
+    private Collection $postUpvotes;
+
     public function __construct()
     {
         $this->posts = new ArrayCollection();
         $this->comments = new ArrayCollection();
+        $this->postUpvotes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -188,6 +195,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($comment->getAuthor() === $this) {
                 $comment->setAuthor(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, PostUpvote>
+     */
+    public function getPostUpvotes(): Collection
+    {
+        return $this->postUpvotes;
+    }
+
+    public function addPostUpvote(PostUpvote $postUpvote): static
+    {
+        if (!$this->postUpvotes->contains($postUpvote)) {
+            $this->postUpvotes->add($postUpvote);
+            $postUpvote->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removePostUpvote(PostUpvote $postUpvote): static
+    {
+        if ($this->postUpvotes->removeElement($postUpvote)) {
+            // set the owning side to null (unless already changed)
+            if ($postUpvote->getUser() === $this) {
+                $postUpvote->setUser(null);
             }
         }
 

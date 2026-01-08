@@ -41,9 +41,16 @@ class Post
     #[ORM\JoinColumn(nullable: false)]
     private ?Topic $topic = null;
 
+    /**
+     * @var Collection<int, PostUpvote>
+     */
+    #[ORM\OneToMany(targetEntity: PostUpvote::class, mappedBy: 'post', orphanRemoval: true)]
+    private Collection $upvotes;
+
     public function __construct()
     {
         $this->comments = new ArrayCollection();
+        $this->upvotes = new ArrayCollection();
     }
 
     #[ORM\PrePersist]
@@ -143,6 +150,36 @@ class Post
     public function setTopic(?Topic $topic): static
     {
         $this->topic = $topic;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, PostUpvote>
+     */
+    public function getUpvotes(): Collection
+    {
+        return $this->upvotes;
+    }
+
+    public function addUpvote(PostUpvote $upvote): static
+    {
+        if (!$this->upvotes->contains($upvote)) {
+            $this->upvotes->add($upvote);
+            $upvote->setPost($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUpvote(PostUpvote $upvote): static
+    {
+        if ($this->upvotes->removeElement($upvote)) {
+            // set the owning side to null (unless already changed)
+            if ($upvote->getPost() === $this) {
+                $upvote->setPost(null);
+            }
+        }
 
         return $this;
     }
