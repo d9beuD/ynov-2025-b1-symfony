@@ -29,14 +29,18 @@
 
                 {# Post actions #}
                 <div class="mb-5">
-                    <a href="{{ path('app_post_upvote', { id: post.id }) }}" class="btn btn-secondary rounded-pill btn-sm">
-                        <i class="fa-solid fa-up"></i>
-                        {{ upvotesCount }}
-                    </a>
-                    <a href="{{ path('app_post_downvote', { id: post.id }) }}" class="btn btn-secondary rounded-pill btn-sm">
-                        <i class="fa-solid fa-down"></i>
-                        {{ downvotesCount }}
-                    </a>
+                    <div class="btn-group">
+                        <a href="{{ path('app_post_upvote', { id: post.id }) }}" class="btn btn-secondary rounded-start-5 btn-sm">
+                            <i class="fa-solid fa-up"></i>
+                        </a>
+                        <div class="bg-secondary text-bg-secondary p-1 align-middle" disabled>
+                            <small>{{ upvotesCount - downvotesCount }}</small>
+                        </div>
+                        <a href="{{ path('app_post_downvote', { id: post.id }) }}" class="btn btn-secondary rounded-end-5 btn-sm">
+                            <i class="fa-solid fa-down"></i>
+                        </a>
+                    </div>
+                    
                     <button class="btn btn-secondary rounded-pill btn-sm">
                         <i class="fa-solid fa-comment"></i>
                         Commentaires

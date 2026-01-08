@@ -9,7 +9,9 @@ use App\Entity\PostUpvote;
 use App\Entity\User;
 use App\Form\CommentType;
 use App\Form\PostType;
+use App\Repository\PostDownvoteRepository;
 use App\Repository\PostRepository;
+use App\Repository\PostUpvoteRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -84,8 +86,19 @@ final class PostController extends AbstractController
     }
 
     #[Route('/{id}/upvote', name: 'app_post_upvote', methods: ['GET'])]
-    public function upvote(#[CurrentUser()] User $user, Post $post, EntityManagerInterface $entityManager): Response
-    {
+    public function upvote(
+        #[CurrentUser()] User $user,
+        Post $post,
+        EntityManagerInterface $entityManager,
+        PostDownvoteRepository $postDownvoteRepository,
+    ): Response {
+
+        $downvote = $postDownvoteRepository->findOneBy(['user' => $user, 'post' => $post]);
+
+        if ($downvote !== null) {
+            $entityManager->remove($downvote);
+        }
+        
         $postUpvote = new PostUpvote();
         $postUpvote
             ->setPost($post)
@@ -99,8 +112,18 @@ final class PostController extends AbstractController
     }
 
     #[Route('/{id}/downvote', name: 'app_post_downvote', methods: ['GET'])]
-    public function downvote(#[CurrentUser()] User $user, Post $post, EntityManagerInterface $entityManager): Response
-    {
+    public function downvote(
+        #[CurrentUser()] User $user, 
+        Post $post, 
+        EntityManagerInterface $entityManager, 
+        PostUpvoteRepository $postUpvoteRepository
+    ): Response {
+        $upvote = $postUpvoteRepository->findOneBy(['user' => $user, 'post' => $post]);
+
+        if ($upvote !== null) {
+            $entityManager->remove($upvote);
+        }
+
         $postDownvote = new PostDownvote();
         $postDownvote
             ->setPost($post)
