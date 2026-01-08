@@ -4,6 +4,7 @@ namespace App\Twig\Components;
 
 use App\Entity\Comment as EntityComment;
 use App\Entity\User;
+use App\Repository\CommentDownvoteRepository;
 use App\Repository\CommentUpvoteRepository;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
@@ -19,6 +20,7 @@ final class Comment
 
     public function __construct(
         protected CommentUpvoteRepository $commentUpvoteRepository,
+        protected CommentDownvoteRepository $commentDownvoteRepository,
         protected Security $security,
     ) {}
 
@@ -28,5 +30,18 @@ final class Comment
             'comment' => $this->comment,
             'user' => $this->security->getUser(),
         ]);
+    }
+
+    public function countDownvotes(): int
+    {
+        return $this->commentDownvoteRepository->count([
+            'comment' => $this->comment,
+            'user' => $this->security->getUser(),
+        ]);
+    }
+
+    public function countVotes(): int
+    {
+        return $this->countUpvotes() - $this->countDownvotes();
     }
 }

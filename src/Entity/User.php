@@ -65,6 +65,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: CommentUpvote::class, mappedBy: 'user', orphanRemoval: true)]
     private Collection $commentUpvotes;
 
+    /**
+     * @var Collection<int, CommentDownvote>
+     */
+    #[ORM\OneToMany(targetEntity: CommentDownvote::class, mappedBy: 'user', orphanRemoval: true)]
+    private Collection $commentDownvotes;
+
     public function __construct()
     {
         $this->posts = new ArrayCollection();
@@ -72,6 +78,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->postUpvotes = new ArrayCollection();
         $this->postDownvotes = new ArrayCollection();
         $this->commentUpvotes = new ArrayCollection();
+        $this->commentDownvotes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -299,6 +306,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($commentUpvote->getUser() === $this) {
                 $commentUpvote->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, CommentDownvote>
+     */
+    public function getCommentDownvotes(): Collection
+    {
+        return $this->commentDownvotes;
+    }
+
+    public function addCommentDownvote(CommentDownvote $commentDownvote): static
+    {
+        if (!$this->commentDownvotes->contains($commentDownvote)) {
+            $this->commentDownvotes->add($commentDownvote);
+            $commentDownvote->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCommentDownvote(CommentDownvote $commentDownvote): static
+    {
+        if ($this->commentDownvotes->removeElement($commentDownvote)) {
+            // set the owning side to null (unless already changed)
+            if ($commentDownvote->getUser() === $this) {
+                $commentDownvote->setUser(null);
             }
         }
 

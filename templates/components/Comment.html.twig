@@ -15,12 +15,11 @@
                 <div class="btn-group">
                     <a href="{{ path('app_comment_upvote', { id: comment.id }) }}" class="btn btn-secondary rounded-start-5 btn-sm">
                         <i class="fa-solid fa-up"></i>
-                        {{ this.countUpvotes }}
                     </a>
                     <div class="bg-secondary text-bg-secondary py-1 px-2">
-                        {# count #}
+                        {{ this.countVotes }}
                     </div>
-                    <a class="btn btn-secondary rounded-end-5 btn-sm">
+                    <a href="{{ path('app_comment_downvote', { id: comment.id }) }}" class="btn btn-secondary rounded-end-5 btn-sm">
                         <i class="fa-solid fa-down"></i>
                     </a>
                 </div>
