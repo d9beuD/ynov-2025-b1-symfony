@@ -13,15 +13,21 @@
             
             <div>
                 <div class="btn-group">
-                    <a href="{{ path('app_comment_upvote', { id: comment.id }) }}" class="btn btn-secondary rounded-start-5 btn-sm">
+                    <button 
+                        class="btn btn-secondary rounded-start-5 btn-sm"
+                        {{ live_action('upvote', { commentId: comment.id }) }}
+                    >
                         <i class="fa-solid fa-up"></i>
-                    </a>
+                    </button>
                     <div class="bg-secondary text-bg-secondary py-1 px-2">
                         {{ this.countVotes }}
                     </div>
-                    <a href="{{ path('app_comment_downvote', { id: comment.id }) }}" class="btn btn-secondary rounded-end-5 btn-sm">
+                    <button 
+                        class="btn btn-secondary rounded-end-5 btn-sm"
+                        {{ live_action('downvote', { commentId: comment.id }) }}
+                    >
                         <i class="fa-solid fa-down"></i>
-                    </a>
+                    </button>
                 </div>
                 <button class="btn btn-secondary rounded-pill btn-sm">
                     <i class="fa-solid fa-comment"></i>
