@@ -33,10 +33,10 @@
                         <i class="fa-solid fa-up"></i>
                         {{ upvotesCount }}
                     </a>
-                    <button class="btn btn-secondary rounded-pill btn-sm">
+                    <a href="{{ path('app_post_downvote', { id: post.id }) }}" class="btn btn-secondary rounded-pill btn-sm">
                         <i class="fa-solid fa-down"></i>
-                        Downvote
-                    </button>
+                        {{ downvotesCount }}
+                    </a>
                     <button class="btn btn-secondary rounded-pill btn-sm">
                         <i class="fa-solid fa-comment"></i>
                         Commentaires

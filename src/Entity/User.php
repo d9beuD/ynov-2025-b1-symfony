@@ -53,11 +53,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: PostUpvote::class, mappedBy: 'user', orphanRemoval: true)]
     private Collection $postUpvotes;
 
+    /**
+     * @var Collection<int, PostDownvote>
+     */
+    #[ORM\OneToMany(targetEntity: PostDownvote::class, mappedBy: 'user', orphanRemoval: true)]
+    private Collection $postDownvotes;
+
     public function __construct()
     {
         $this->posts = new ArrayCollection();
         $this->comments = new ArrayCollection();
         $this->postUpvotes = new ArrayCollection();
+        $this->postDownvotes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -225,6 +232,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($postUpvote->getUser() === $this) {
                 $postUpvote->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, PostDownvote>
+     */
+    public function getPostDownvotes(): Collection
+    {
+        return $this->postDownvotes;
+    }
+
+    public function addPostDownvote(PostDownvote $postDownvote): static
+    {
+        if (!$this->postDownvotes->contains($postDownvote)) {
+            $this->postDownvotes->add($postDownvote);
+            $postDownvote->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removePostDownvote(PostDownvote $postDownvote): static
+    {
+        if ($this->postDownvotes->removeElement($postDownvote)) {
+            // set the owning side to null (unless already changed)
+            if ($postDownvote->getUser() === $this) {
+                $postDownvote->setUser(null);
             }
         }
 

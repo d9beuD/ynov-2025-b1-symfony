@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Comment;
 use App\Entity\Post;
+use App\Entity\PostDownvote;
 use App\Entity\PostUpvote;
 use App\Entity\User;
 use App\Form\CommentType;
@@ -31,6 +32,7 @@ final class PostController extends AbstractController
         return $this->render('post/show.html.twig', [
             'post' => $post,
             'upvotesCount' => $postRepository->countUpvotes($post->getId()),
+            'downvotesCount' => $postRepository->countDownvotes($post->getId()),
             'form' => $form,
         ]);
     }
@@ -91,6 +93,21 @@ final class PostController extends AbstractController
         ;
 
         $entityManager->persist($postUpvote);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('app_post_show', ['id' => $post->getId()]);
+    }
+
+    #[Route('/{id}/downvote', name: 'app_post_downvote', methods: ['GET'])]
+    public function downvote(#[CurrentUser()] User $user, Post $post, EntityManagerInterface $entityManager): Response
+    {
+        $postDownvote = new PostDownvote();
+        $postDownvote
+            ->setPost($post)
+            ->setUser($user)
+        ;
+
+        $entityManager->persist($postDownvote);
         $entityManager->flush();
 
         return $this->redirectToRoute('app_post_show', ['id' => $post->getId()]);

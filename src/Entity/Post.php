@@ -47,10 +47,17 @@ class Post
     #[ORM\OneToMany(targetEntity: PostUpvote::class, mappedBy: 'post', orphanRemoval: true)]
     private Collection $upvotes;
 
+    /**
+     * @var Collection<int, PostDownvote>
+     */
+    #[ORM\OneToMany(targetEntity: PostDownvote::class, mappedBy: 'post', orphanRemoval: true)]
+    private Collection $downvotes;
+
     public function __construct()
     {
         $this->comments = new ArrayCollection();
         $this->upvotes = new ArrayCollection();
+        $this->downvotes = new ArrayCollection();
     }
 
     #[ORM\PrePersist]
@@ -178,6 +185,36 @@ class Post
             // set the owning side to null (unless already changed)
             if ($upvote->getPost() === $this) {
                 $upvote->setPost(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, PostDownvote>
+     */
+    public function getDownvotes(): Collection
+    {
+        return $this->downvotes;
+    }
+
+    public function addDownvote(PostDownvote $downvote): static
+    {
+        if (!$this->downvotes->contains($downvote)) {
+            $this->downvotes->add($downvote);
+            $downvote->setPost($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDownvote(PostDownvote $downvote): static
+    {
+        if ($this->downvotes->removeElement($downvote)) {
+            // set the owning side to null (unless already changed)
+            if ($downvote->getPost() === $this) {
+                $downvote->setPost(null);
             }
         }
 

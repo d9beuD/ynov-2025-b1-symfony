@@ -28,4 +28,17 @@ class PostRepository extends ServiceEntityRepository
 
         return $qb->getQuery()->getSingleScalarResult();
     }
+
+    public function countDownvotes(int $id): int
+    {
+        $qb = $this->createQueryBuilder('p');
+        $qb
+            ->select('COUNT(u.id)')
+            ->leftJoin('p.downvotes', 'u')
+            ->where('p.id = :id')
+            ->setParameter('id', $id)
+        ;
+
+        return $qb->getQuery()->getSingleScalarResult();
+    }
 }
