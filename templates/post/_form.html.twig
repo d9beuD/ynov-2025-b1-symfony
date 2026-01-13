@@ -1,4 +1,24 @@
 {{ form_start(form) }}
     {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
+    <div class="row justify-content-end gx-1">
+        <div class="col-auto">
+            {% if post.id %}
+                <a href="{{ path('app_post_show', { id: post.id }) }}" class="btn btn-secondary">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    Annuler
+                </a>
+            {% else %}
+                <a href="{{ path('app_topic_show', { id: topic.id }) }}" class="btn btn-secondary">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    Annuler
+                </a>
+            {% endif %}
+        </div>
+        <div class="col-auto">
+            <button class="btn btn-primary">
+                <i class="fa-solid fa-save"></i>
+                {{ button_label|default('Enregistrer') }}
+            </button>
+        </div>
+    </div>
 {{ form_end(form) }}
