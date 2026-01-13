@@ -1,0 +1,17 @@
+<div class="btn-group">
+    <button
+        {{ live_action('upvote', { id: post.id }) }}
+        class="btn btn-secondary rounded-start-5 btn-sm {{ this.hasUpvoted ? 'active':'' }}"
+    >
+        <i class="fa-solid fa-up"></i>
+    </button>
+    <div class="bg-secondary text-bg-secondary py-1 px-2 align-middle" disabled>
+        <small>{{ this.upvoteCount - this. downvoteCount }}</small>
+    </div>
+    <button
+        {{ live_action('downvote', { id: post.id }) }}
+        class="btn btn-secondary rounded-end-5 btn-sm {{ this.hasDownvoted ? 'active':'' }}"
+    >
+        <i class="fa-solid fa-down"></i>
+    </button>
+</div>

@@ -1,0 +1,15 @@
+<div{{ attributes }} class="row align-items-center gx-1 mb-3">
+    <div class="col-auto">
+        <i class="fa-solid fa-circle-user fs-1 text-primary"></i>
+    </div>
+    <div class="col-auto lh-sm">
+        <div>
+            <a
+                class="link-dark link-underline-opacity-0 link-underline-opacity-100-hover" 
+                href="{{ path('app_topic_show', { id: this.post.topic.id }) }}"
+            >{{ this.post.topic.title }}</a>
+            • {{ this.post.postedAt ? this.post.postedAt|date('d/m/Y H:i:s') : '' }}
+        </div>
+        <div>{{ this.post.author.email }}</div>
+    </div>
+</div>

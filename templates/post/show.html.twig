@@ -6,59 +6,11 @@
     <div class="container my-5">
         <div class="row">
             <div class="col">
-                {# Post header #}
-                <div class="row align-items-center gx-1 mb-3">
-                    <div class="col-auto">
-                        <i class="fa-solid fa-circle-user fs-1 text-primary"></i>
-                    </div>
-                    <div class="col-auto lh-sm">
-                        <div>
-                            <a
-                                class="link-dark link-underline-opacity-0 link-underline-opacity-100-hover" 
-                                href="{{ path('app_topic_show', { id: post.topic.id }) }}"
-                            >{{ post.topic.title }}</a>
-                            • {{ post.postedAt ? post.postedAt|date('d/m/Y H:i:s') : '' }}
-                        </div>
-                        <div>{{ post.author.email }}</div>
-                    </div>
-                </div>
-
-                {# Post content #}
-                <h1>{{ post.title }}</h1>
-                <p class="lead">{{ post.content }}</p>
-
-                {# Post actions #}
-                <div class="mb-5">
-                    <div class="btn-group">
-                        <a
-                            href="{{ path('app_post_upvote', { id: post.id }) }}"
-                            class="btn btn-secondary rounded-start-5 btn-sm {{ hasUpvoted ? 'active':'' }}"
-                        >
-                            <i class="fa-solid fa-up"></i>
-                        </a>
-                        <div class="bg-secondary text-bg-secondary py-1 px-2 align-middle" disabled>
-                            <small>{{ upvotesCount - downvotesCount }}</small>
-                        </div>
-                        <a
-                            href="{{ path('app_post_downvote', { id: post.id }) }}" 
-                            class="btn btn-secondary rounded-end-5 btn-sm {{ hasDownvoted ? 'active':'' }}"
-                        >
-                            <i class="fa-solid fa-down"></i>
-                        </a>
-                    </div>
-                    
-                    <button class="btn btn-secondary rounded-pill btn-sm">
-                        <i class="fa-solid fa-comment"></i>
-                        Commentaires
-                    </button>
-                    <button class="btn btn-secondary rounded-pill btn-sm">
-                        <i class="fa-solid fa-medal"></i>
-                    </button>
-                    <button class="btn btn-secondary rounded-pill btn-sm">
-                        <i class="fa-solid fa-share"></i>
-                        Partager
-                    </button>
-                </div>
+                <twig:Post post="{{ post }}">
+                    {{ component('Post:Header', { post: post }) }}
+                    <twig:Post:Content post="{{ post }}" />
+                    <twig:Post:Actions post="{{ post }}" />
+                </twig:Post>
 
                 {# Comment form #}
                 {{ form_start(form) }}
