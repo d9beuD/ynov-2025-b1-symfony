@@ -2,6 +2,12 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
+use App\Entity\Post as EntityPost;
 use App\Repository\CommentRepository;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -9,6 +15,24 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
+#[ApiResource(
+    operations: [
+        new Get(
+            normalizationContext: ['groups' => ['comment:read']],
+        ),
+        new GetCollection(
+            normalizationContext: ['groups' => ['comment:read']],
+        ),
+        new Post(
+            normalizationContext: ['groups' => ['comment:read']],
+            denormalizationContext: ['groups' => ['comment:create']],
+        ),
+        new Patch(
+            normalizationContext: ['groups' => ['comment:read']],
+            denormalizationContext: ['groups' => ['comment:create']],
+        ),
+    ],
+)]
 #[ORM\HasLifecycleCallbacks]
 #[ORM\Entity(repositoryClass: CommentRepository::class)]
 class Comment
@@ -38,7 +62,7 @@ class Comment
     private Collection $replies;
 
     #[ORM\ManyToOne(inversedBy: 'comments')]
-    private ?Post $post = null;
+    private ?EntityPost $post = null;
 
     /**
      * @var Collection<int, CommentUpvote>
@@ -148,12 +172,12 @@ class Comment
         return $this;
     }
 
-    public function getPost(): ?Post
+    public function getPost(): ?EntityPost
     {
         return $this->post;
     }
 
-    public function setPost(?Post $post): static
+    public function setPost(?EntityPost $post): static
     {
         $this->post = $post;
 

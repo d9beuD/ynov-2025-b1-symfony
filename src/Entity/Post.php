@@ -2,31 +2,62 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post as MetadataPost;
 use App\Repository\PostRepository;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
+#[ApiResource(
+    operations: [
+        new Get(
+            normalizationContext: ['groups' => ['post:read']],
+        ),
+        new GetCollection(
+            normalizationContext: ['groups' => ['post:read']],
+        ),
+        new MetadataPost(
+            normalizationContext: ['groups' => ['post:read']],
+            denormalizationContext: ['groups' => ['post:create']],
+            // security: 'is_granted("ROLE_USER")',
+        ),
+        new Patch(
+            normalizationContext: ['groups' => ['post:read']],
+            denormalizationContext: ['groups' => ['post:update']],
+            security: 'is_granted("ROLE_USER")',
+        ),
+    ]
+)]
 #[ORM\HasLifecycleCallbacks]
 #[ORM\Entity(repositoryClass: PostRepository::class)]
 class Post
 {
+    #[Groups('post:read')]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Groups(['post:read', 'post:create', 'post:update'])]
     #[ORM\Column(length: 255)]
     private ?string $title = null;
 
+    #[Groups(['post:read', 'post:create', 'post:update'])]
     #[ORM\Column(type: Types::TEXT)]
     private ?string $content = null;
 
+    #[Groups('post:read')]
     #[ORM\Column]
     private ?\DateTimeImmutable $postedAt = null;
 
+    #[Groups(['post:read', 'post:create'])]
     #[ORM\ManyToOne(inversedBy: 'posts')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $author = null;
@@ -37,6 +68,7 @@ class Post
     #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'post')]
     private Collection $comments;
 
+    #[Groups(['post:read', 'post:create'])]
     #[ORM\ManyToOne(inversedBy: 'posts')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Topic $topic = null;
