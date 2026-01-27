@@ -31,18 +31,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Groups('user:read')]
     #[ORM\Column(length: 180)]
     private ?string $email = null;
 
     /**
      * @var list<string> The user roles
      */
+    #[Groups('user:read')]
     #[ORM\Column]
     private array $roles = [];
 
     /**
      * @var string The hashed password
      */
+    #[Groups('user:read')]
     #[ORM\Column]
     private ?string $password = null;
 
