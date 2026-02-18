@@ -5,6 +5,7 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use App\Repository\UserRepository;
+use App\State\UserCurrentProvider;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -15,6 +16,11 @@ use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ApiResource(
     operations: [
+        new Get(
+            uriTemplate: '/users/current',
+            normalizationContext: ['groups' => ['user:read']],
+            provider: UserCurrentProvider::class,
+        ),
         new Get(
             normalizationContext: ['groups' => ['user:read']]
         ),
@@ -45,7 +51,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var string The hashed password
      */
-    #[Groups('user:read')]
     #[ORM\Column]
     private ?string $password = null;
 
