@@ -5,6 +5,7 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post as MetadataPost;
 use App\Repository\PostRepository;
@@ -18,18 +19,23 @@ use Symfony\Component\Serializer\Attribute\Groups;
 #[ApiResource(
     operations: [
         new Get(
-            normalizationContext: ['groups' => ['post:read']],
+            normalizationContext: ['groups' => ['post:read', 'user:read']],
         ),
         new GetCollection(
-            normalizationContext: ['groups' => ['post:read']],
+            normalizationContext: ['groups' => ['post:read', 'user:read']],
+        ),
+        new GetCollection(
+            uriTemplate: '/topics/{id}/posts',
+            uriVariables: ['id' => new Link(fromClass: Topic::class, fromProperty: 'posts')],
+            normalizationContext: ['groups' => ['post:read', 'user:read']],
         ),
         new MetadataPost(
-            normalizationContext: ['groups' => ['post:read']],
+            normalizationContext: ['groups' => ['post:read', 'user:read']],
             denormalizationContext: ['groups' => ['post:create']],
             // security: 'is_granted("ROLE_USER")',
         ),
         new Patch(
-            normalizationContext: ['groups' => ['post:read']],
+            normalizationContext: ['groups' => ['post:read', 'user:read']],
             denormalizationContext: ['groups' => ['post:update']],
             security: 'is_granted("ROLE_USER")',
         ),
@@ -68,7 +74,7 @@ class Post
     #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'post', orphanRemoval: true)]
     private Collection $comments;
 
-    #[Groups(['post:read', 'post:create'])]
+    #[Groups(['post:create'])]
     #[ORM\ManyToOne(inversedBy: 'posts')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Topic $topic = null;
