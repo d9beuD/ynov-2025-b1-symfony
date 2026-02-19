@@ -5,6 +5,7 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Entity\Post as EntityPost;
@@ -14,6 +15,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ApiResource(
     operations: [
@@ -21,7 +23,9 @@ use Doctrine\ORM\Mapping as ORM;
             normalizationContext: ['groups' => ['comment:read']],
         ),
         new GetCollection(
-            normalizationContext: ['groups' => ['comment:read']],
+            uriTemplate: '/posts/{id}/comments',
+            uriVariables: ['id' => new Link(fromClass: EntityPost::class, fromProperty: 'comments')],
+            normalizationContext: ['groups' => ['comment:read', 'user:read']],
         ),
         new Post(
             normalizationContext: ['groups' => ['comment:read']],
@@ -40,16 +44,20 @@ class Comment
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['comment:read'])]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(['comment:read'])]
     private ?string $content = null;
 
     #[ORM\Column]
+    #[Groups(['comment:read'])]
     private ?\DateTimeImmutable $postedAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'comments')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['comment:read'])]
     private ?User $author = null;
 
     #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'replies')]
