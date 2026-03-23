@@ -10,6 +10,7 @@ use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Entity\Post as EntityPost;
 use App\Repository\CommentRepository;
+use App\State\AddCommentProcessor;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -28,6 +29,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
             normalizationContext: ['groups' => ['comment:read', 'user:read']],
         ),
         new Post(
+            processor: AddCommentProcessor::class,
             normalizationContext: ['groups' => ['comment:read']],
             denormalizationContext: ['groups' => ['comment:create']],
         ),
@@ -48,7 +50,7 @@ class Comment
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Groups(['comment:read'])]
+    #[Groups(['comment:read', 'comment:create'])]
     private ?string $content = null;
 
     #[ORM\Column]
@@ -70,6 +72,7 @@ class Comment
     private Collection $replies;
 
     #[ORM\ManyToOne(inversedBy: 'comments')]
+    #[Groups(['comment:create'])]
     private ?EntityPost $post = null;
 
     /**
